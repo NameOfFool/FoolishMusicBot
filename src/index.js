@@ -1,15 +1,7 @@
-const { Client, IntentsBitField } = require("discord.js");
-const dotenv = require("dotenv");
-const { registerCommands } = require("./register-commands");
+const { IntentsBitField, Collection } = require("discord.js");
+const FoolishMusicBot = require("../lib/FoolishMusicBot");
 
-
-
-dotenv.config();
-const token = process.env.TOKEN;
-
-
-
-const client = new Client({
+const client = new FoolishMusicBot({
   intents: [
     IntentsBitField.Flags.Guilds,
     IntentsBitField.Flags.GuildMembers,
@@ -21,17 +13,10 @@ const client = new Client({
 client.on('ready', (c) =>{
   console.log(`${c.user.tag} is online.`)
 })
-
-client.on('guildCreate',(guild)=>{
-  console.log(`We was added to a new guild`)
-  registerCommands(guild.id)
-})
-
-client.on('interactionCreate', (interaction) =>{
-  console.log(interaction)
-  if(interaction.commandName === 'hey'){
-    interaction.reply("F#ck you")
-  }
+client.commands = new Collection()
+const comms = require("./commands")
+Object.keys(comms).map(key =>{
+  client.commands.set(comms[key].name, comms[key])
 })
 
 client.login(token);
